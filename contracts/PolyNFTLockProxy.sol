@@ -9,6 +9,7 @@ import "./libs/utils/Utils.sol";
 import "./libs/utils/Address.sol";
 import "./libs/token/ERC721/IERC721Metadata.sol";
 import "./libs/token/ERC721/IERC721Receiver.sol";
+import "./libs/token/ERC721/ERC721Burnable.sol";
 import "./libs/math/SafeMath.sol";
 import "./core/cross_chain_manager/interface/IEthCrossChainManager.sol";
 import "./core/cross_chain_manager/interface/IEthCrossChainManagerProxy.sol";
@@ -132,6 +133,11 @@ contract PolyNFTLockProxy is IERC721Receiver, Ownable {
             require(toProxyHash.length != 0, "empty illegal toProxyHash");
             require(eccm.crossChain(toChainId, toProxyHash, "unlock", txData), "EthCrossChainManager crossChain executed error!");
         }
+
+        {
+            ERC721Burnable(fromAssetHash).burn(tokenId);
+        }
+
         {
             emit LockEvent(fromAssetHash, from, toAssetHash, toAddress, toChainId, tokenId);
         }
